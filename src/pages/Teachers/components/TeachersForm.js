@@ -1,9 +1,9 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 // material-ui
 import {
   Typography,
   Stack,
-  LinearProgress,
   Grid,
   TextField,
   MenuItem,
@@ -19,12 +19,60 @@ import {
 import MainCard from 'components/MainCard';
 
 // react-router-dom
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const TeachersForm = ({ teacher, isEdit }) => {
-  if (!teacher && isEdit) {
-    return <LinearProgress />;
-  }
+  console.log('Teacher', teacher);
+  const [name, setName] = useState(teacher?.name || '');
+  const [lastName, setLastName] = useState(teacher?.lastName || '');
+  const [email, setEmail] = useState(teacher?.email || '');
+  const [phone, setPhone] = useState(teacher?.phone || '');
+  const [address, setAddress] = useState(teacher?.address || '');
+  const [age, setAge] = useState(teacher?.age || '');
+  const [gender, setGender] = useState(teacher?.gender || '');
+  const [typeDocument, setTypeDocument] = useState(teacher?.typeDocument || '');
+  const [numberDocument, setNumberDocument] = useState(teacher?.numberDocument || '');
+  const [dateBirth, setDateBirth] = useState(teacher?.dateBirth || '');
+  const [typeSubject, setTypeSubject] = useState(teacher?.typeSubject || '');
+  const [Code, setCodeTeacher] = useState(teacher?.Code || '');
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    //send data
+    const body = {
+      name,
+      lastName,
+      email,
+      phone,
+      address,
+      age,
+      gender,
+      typeDocument,
+      numberDocument,
+      dateBirth,
+      typeSubject,
+      Code
+    };
+
+    const URL = isEdit ? `http://localhost:9000/api/teachers/${teacher._id}` : 'http://localhost:9000/api/teachers';
+
+    try {
+      const response = await fetch(URL, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      const result = await response.json();
+      console.log(result);
+
+      navigate('/teachers');
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Stack spacing={3} px={20}>
@@ -37,14 +85,19 @@ const TeachersForm = ({ teacher, isEdit }) => {
           </Grid>
           <Grid item xs={6} sm={4} md={6} lg={8}>
             <Stack spacing={2}>
-              <TextField id="outlined-basic" label="Name" variant="outlined" defaultValue={teacher.name} />
-              <TextField id="outlined-basic" label="Last Name" variant="outlined" defaultValue={teacher.lastName} />
-              <TextField id="outlined-basic" label="Email" variant="outlined" defaultValue={teacher.email} />
-              <TextField id="outlined-basic" label="Phone" variant="outlined" defaultValue={teacher.phone} />
-              <TextField id="outlined-basic" label="Address" variant="outlined" defaultValue={teacher.address} />
-              <TextField id="outlined-basic" label="Age" variant="outlined" defaultValue={teacher.age} />
+              <TextField label="Name" variant="outlined" defaultValue={teacher.name} onChange={(e) => setName(e.target.value)} />
+              <TextField
+                label="Last Name"
+                variant="outlined"
+                defaultValue={teacher.lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+              <TextField label="Email" variant="outlined" defaultValue={teacher.email} onChange={(e) => setEmail(e.target.value)} />
+              <TextField label="Phone" variant="outlined" defaultValue={teacher.phone} onChange={(e) => setPhone(e.target.value)} />
+              <TextField label="Address" variant="outlined" defaultValue={teacher.address} onChange={(e) => setAddress(e.target.value)} />
+              <TextField label="Age" variant="outlined" defaultValue={teacher.age} onChange={(e) => setAge(e.target.value)} />
               <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-              <RadioGroup defaultValue={teacher.gender} row>
+              <RadioGroup defaultValue={teacher.gender} row onChange={(e) => setGender(e.target.value)}>
                 <FormControlLabel value="female" control={<Radio />} label="Female" />
                 <FormControlLabel value="male" control={<Radio />} label="Male" />
                 <FormControlLabel value="other" control={<Radio />} label="Other" />
@@ -63,13 +116,28 @@ const TeachersForm = ({ teacher, isEdit }) => {
           </Grid>
           <Grid item xs={6} sm={4} md={6} lg={8}>
             <Stack spacing={2}>
-              <Select labelId="demo-simple-select-label" defaultValue={teacher.typeDocument} id="demo-simple-select" label="Type Document">
+              <FormLabel id="demo-simple-select-label">Type Document</FormLabel>
+              <Select defaultValue={teacher.typeDocument} label="Type Document" onChange={(e) => setTypeDocument(e.target.value)}>
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
                 <MenuItem value="passport">Passport</MenuItem>
                 <MenuItem value="identification_card">Identification Card</MenuItem>
               </Select>
-              <TextField id="outlined-basic" label="Number document" variant="outlined" defaultValue={teacher.numberDocument} />
+              <TextField
+                label="Number document"
+                variant="outlined"
+                defaultValue={teacher.numberDocument}
+                onChange={(e) => setNumberDocument(e.target.value)}
+              />
               <FormLabel id="demo-simple-select-label">Date of birth</FormLabel>
-              <TextField id="outlined-basic" type="date" variant="outlined" placeholder="YY/MM/AAA" defaultValue={teacher.dateBirth} />
+              <TextField
+                type="date"
+                variant="outlined"
+                placeholder="YY/MM/AAA"
+                defaultValue={teacher.dateBirth}
+                onChange={(e) => setDateBirth(e.target.value)}
+              />
             </Stack>
           </Grid>
         </Grid>
@@ -84,7 +152,11 @@ const TeachersForm = ({ teacher, isEdit }) => {
           </Grid>
           <Grid item xs={6} sm={4} md={6} lg={8}>
             <Stack spacing={2}>
-              <Select labelId="demo-simple-select-label" defaultValue={teacher.typeSubject} id="demo-simple-select" label="Type Document">
+              <FormLabel id="demo-simple-select-label">Type Subject</FormLabel>
+              <Select defaultValue={teacher.typeSubject} onChange={(e) => setTypeSubject(e.target.value)}>
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
                 <MenuItem value="software_development">Software development</MenuItem>
                 <MenuItem value="machine_learning">Machine Learning</MenuItem>
                 <MenuItem value="mathematics">Mathematics ||</MenuItem>
@@ -102,7 +174,13 @@ const TeachersForm = ({ teacher, isEdit }) => {
           </Grid>
           <Grid item xs={6} sm={4} md={6} lg={8}>
             <Stack spacing={2}>
-              <TextField id="outlined-basic" label="Code of Teacher" variant="outlined" defaultValue={teacher.CodeofTeacher} />
+              <TextField
+                id="outlined-basic"
+                label="Code of Teacher"
+                variant="outlined"
+                defaultValue={teacher.Code}
+                onChange={(e) => setCodeTeacher(e.target.value)}
+              />
             </Stack>
           </Grid>
         </Grid>
@@ -110,13 +188,13 @@ const TeachersForm = ({ teacher, isEdit }) => {
       <Stack>
         <Grid container spacing={2} direction="row-reverse">
           <Grid item>
-            <Button size="small" variant="contained">
-              Create
+            <Button size="small" variant="contained" onClick={handleSubmit}>
+              {isEdit ? 'Edit' : 'Create'}
             </Button>
           </Grid>
 
           <Grid item>
-            <Button size="small" variant="outlined" component={Link} to="/teachers">
+            <Button size="small" variant="outlined" component={Link} to="/Teachers">
               Cancel
             </Button>
           </Grid>
@@ -138,11 +216,12 @@ const Teacher = {
   phone: '',
   address: '',
   age: 0,
-  gender: 'male',
-  typeDocument: 'passport',
-  typeSubject: 'machine_learning',
+  gender: '',
+  typeDocument: '',
+  typeSubject: '',
   numberDocument: '',
-  dateBirth: ''
+  dateBirth: '',
+  Code: ''
 };
 
 TeachersForm.defaultProps = {

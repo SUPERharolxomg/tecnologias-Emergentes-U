@@ -19,7 +19,7 @@ const TeacherRoute = {
       element: <Create />
     },
     {
-      path: 'teachers/edit/:teachersId',
+      path: 'teachers/edit/:teacherId',
       element: <Edit />
     }
   ]

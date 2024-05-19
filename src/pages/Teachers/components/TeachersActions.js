@@ -6,6 +6,7 @@ import { IconButton, Menu, MenuItem } from '@mui/material';
 
 import { MoreOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
+//react-router-dom
 import { Link } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
@@ -17,8 +18,28 @@ const TeachersActions = ({ teachersId }) => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const deleteTeacher = async () => {
+    try {
+      const response = await fetch(`http://localhost:9000/api/teachers/${teachersId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+      console.log(result);
+      // Refrescar la página
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    handleClose();
   };
 
   return (
@@ -48,12 +69,12 @@ const TeachersActions = ({ teachersId }) => {
           }
         }}
       >
-        <MenuItem onClick={handleClose} disableRipple component={Link} to={`/teachers/edit/${teachersId}`}>
+        <MenuItem disableRipple component={Link} to={`/teachers/edit/${teachersId}`}>
           <EditOutlined style={{ marginRight: 10 }} />
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleClose} disableRipple>
+        <MenuItem onClick={deleteTeacher} disableRipple>
           <DeleteOutlined style={{ marginRight: 10 }} />
           Delete
         </MenuItem>
@@ -63,7 +84,7 @@ const TeachersActions = ({ teachersId }) => {
 };
 
 TeachersActions.propTypes = {
-  studentId: PropTypes.number
+  teachersId: PropTypes.string
 };
 
 export default TeachersActions;
